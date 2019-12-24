@@ -6,7 +6,6 @@ black==19.10b0
 certifi==2019.11.28
 chardet==3.0.4
 Click==7.0
-discord.py==1.2.5
 entrypoints==0.3
 fastapi==0.45.0
 flake8==3.7.9
