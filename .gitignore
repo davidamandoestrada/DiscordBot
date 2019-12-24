@@ -4,3 +4,6 @@ env/
 
 # Don't track .env file. It contains our bot's token.
 .env
+
+# Don't track *.pyc files
+*.pyc
