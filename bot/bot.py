@@ -1,12 +1,12 @@
-# bot.py
 import os
-import random
+import requests
 
 import discord
 from dotenv import load_dotenv
 
 load_dotenv()
 token = os.getenv("DISCORD_TOKEN")
+processor = os.getenv("PROCESSOR_URL")
 
 client = discord.Client()
 
@@ -27,8 +27,23 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    response = f'User {message.author} has said "{message.content}"'
-    await message.channel.send(response)
+    session = requests.Session()
+    payload = {"author": str(message.author), "content": message.content}
+
+    try:
+        response = session.get(f"{processor}/message/", json=payload)
+        if response.status_code == 200:
+            response_message = response.json()["response_message"]
+            error = response.json()["error"]
+            if error is None:
+                await message.channel.send(response_message)
+            else:
+                response_message = f"An error has occurred while processing this message. Error: {error}"
+                await message.channel.send(response_message)
+        else:
+            await message.channel.send(response)
+    except Exception as exception:
+        await message.channel.send(f"ERROR: {exception}")
 
 
 client.run(token)
