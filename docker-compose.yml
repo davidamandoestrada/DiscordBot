@@ -4,6 +4,8 @@ services:
         build: 
             context: ./processor
             dockerfile: Dockerfile
+        depends_on:
+            - db
         ports:
             - '8000:8000'
         networks:
@@ -20,6 +22,11 @@ services:
         networks:
             - my_network
 
+    db:
+        image: postgres
+        volumes:
+            - ./tmp/db:/var/lib/postgresql/data
+            
 networks:
     my_network:
         driver: "bridge"
