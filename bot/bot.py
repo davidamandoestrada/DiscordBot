@@ -36,7 +36,8 @@ async def on_message(message):
             response_message = response.json()["response_message"]
             error = response.json()["error"]
             if error is None:
-                await message.channel.send(response_message)
+                if response_message:
+                    await message.channel.send(response_message)
             else:
                 response_message = f"An error has occurred while processing this message. Error: {error}"
                 await message.channel.send(response_message)
