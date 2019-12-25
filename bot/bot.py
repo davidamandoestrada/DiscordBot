@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 token = os.getenv("DISCORD_TOKEN")
-processor = os.getenv("PROCESSOR_URL")
+processor = f'http://{os.getenv("PROCESSOR_URL")}:80'
 
 client = discord.Client()
 

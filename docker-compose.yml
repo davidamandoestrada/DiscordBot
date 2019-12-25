@@ -1,0 +1,25 @@
+version: '3'
+services:
+    processor:
+        build: 
+            context: ./processor
+            dockerfile: Dockerfile
+        ports:
+            - '8000:8000'
+        networks:
+            - my_network
+
+    bot:
+        build: 
+            context: ./bot
+            dockerfile: Dockerfile
+        depends_on:
+            - processor
+        env_file:
+            - ./bot/.env
+        networks:
+            - my_network
+
+networks:
+    my_network:
+        driver: "bridge"

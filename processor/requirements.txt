@@ -9,7 +9,6 @@ Click==7.0
 entrypoints==0.3
 fastapi==0.45.0
 flake8==3.7.9
-h11==0.9.0
 httptools==0.0.13
 idna==2.8
 mccabe==0.6.1
@@ -25,7 +24,6 @@ starlette==0.12.9
 toml==0.10.0
 typed-ast==1.4.0
 urllib3==1.25.7
-uvicorn==0.11.1
 uvloop==0.14.0
 websockets==8.1
 yarl==1.4.2

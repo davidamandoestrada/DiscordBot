@@ -1,9 +1,8 @@
 FROM python:3.7-slim-buster
 ARG DISCORD_TOKEN
-ARG PROCESSOR_URL
 WORKDIR /code
 ENV DISCORD_TOKEN=${DISCORD_TOKEN}
-ENV PROCESSOR_URL=${PROCESSOR_URL}
+ENV PROCESSOR_URL=processor
 RUN apt-get update
 RUN apt-get -y install gcc
 COPY requirements.txt requirements.txt
