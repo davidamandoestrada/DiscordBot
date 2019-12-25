@@ -1,6 +1,7 @@
 # Don't track content of these folders
 env/
 .vscode/
+tmp/
 
 # Don't track .env file. It contains our bot's token.
 .env
