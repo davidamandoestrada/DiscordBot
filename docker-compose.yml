@@ -23,9 +23,24 @@ services:
             - my_network
 
     db:
-        image: postgres
+        build:
+            context: ./db
+            dockerfile: Dockerfile
         volumes:
             - ./tmp/db:/var/lib/postgresql/data
+        ports:
+            - '5432:5432'
+        networks:
+            - my_network
+
+    db-migration:
+        build:
+            context: ./db-migration
+            dockerfile: Dockerfile
+        depends_on:
+            - db
+        networks:
+            - my_network
             
 networks:
     my_network:
