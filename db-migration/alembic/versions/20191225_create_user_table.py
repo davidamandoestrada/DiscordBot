@@ -18,11 +18,11 @@ import sqlalchemy as sa
 
 def upgrade():
     op.create_table(
-        "user",
+        "discord_user",
         sa.Column("id", sa.Integer, primary_key=True),
         sa.Column("user_name", sa.String(), nullable=False),
     )
 
 
 def downgrade():
-    op.drop_table("user")
+    op.drop_table("discord_user")
