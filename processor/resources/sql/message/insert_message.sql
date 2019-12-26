@@ -1,2 +1,2 @@
 -- :name insert_message :insert
-insert into message(user_name, content) values (:user_name, :content)
+insert into message(user_id, date_time, content) values (:user_id, :date_time, :content)

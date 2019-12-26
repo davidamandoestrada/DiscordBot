@@ -31,12 +31,13 @@ def process_message(message: IncomingMessage):
         for user in users:
             response.append(f"User {user.user_name} has said:")
             for message in user.messages:
-                response.append(message.content)
+                response.append(f"{message.date_time}: {message.content}")
         return {"response_message": "\n".join(response), "error": None}
     else:
         try:
             user = find_user_by_user_name(message.author)
         except UserNotFoundError:
-            user = User.create_new(message.author)
-        Message.create_new(message.author, message.content)
+            User.create_new(message.author)
+            user = find_user_by_user_name(message.author)
+        Message.create_new(user, message.content)
         return {"response_message": None, "error": None}

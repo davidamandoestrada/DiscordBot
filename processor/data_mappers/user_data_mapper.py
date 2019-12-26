@@ -15,11 +15,13 @@ class UserDataMapper:
 
     def find_users(self):
         results = queries.find_users()
-        return [User(result["user_name"]) for result in results]
+        return [
+            User(id=result["id"], user_name=result["user_name"]) for result in results
+        ]
 
     def find_user_by_user_name(self, user_name: str):
         result = queries.find_user_by_user_name(user_name=user_name)
         if result:
-            return User(user_name=result["user_name"])
+            return User(id=result["id"], user_name=result["user_name"])
         else:
             raise UserNotFoundError

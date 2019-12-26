@@ -11,12 +11,17 @@ queries.connect("postgresql://postgres@db/discordbot")
 
 
 class MessageDataMapper:
-    def create(self, author: str, content: str):
-        queries.insert_message(user_name=author, content=content)
+    def create(self, user, date_time, content: str):
+        queries.insert_message(user_id=user.id, date_time=date_time, content=content)
 
-    def find_messages_by_user_name(self, user_name: str):
-        results = queries.find_messages_by_user_name(user_name=user_name)
+    def find_messages_by_user(self, user):
+        results = queries.find_messages_by_user_id(user_id=user.id)
         return [
-            Message(content=result["content"], author=result["user_name"])
+            Message(
+                id=result["id"],
+                date_time=result["date_time"],
+                content=result["content"],
+                author_id=result["user_id"],
+            )
             for result in results
         ]

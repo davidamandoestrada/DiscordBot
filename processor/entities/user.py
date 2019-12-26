@@ -1,5 +1,5 @@
 from data_mappers.registry import DataMapperRegistry
-from entities.message import find_messages_by_user_name
+from entities.message import find_messages_by_user
 
 
 def find_users():
@@ -15,7 +15,8 @@ def find_user_by_user_name(user_name: str):
 
 
 class User:
-    def __init__(self, user_name: str):
+    def __init__(self, id, user_name: str):
+        self.id = id
         self.user_name = user_name
 
     @classmethod
@@ -25,7 +26,7 @@ class User:
 
     @property
     def messages(self):
-        return find_messages_by_user_name(self.user_name)
+        return find_messages_by_user(self)
 
 
 class UserNotFoundError(Exception):
