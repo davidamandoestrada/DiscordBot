@@ -20,7 +20,8 @@ def upgrade():
     op.create_table(
         "message",
         sa.Column("id", sa.Integer, primary_key=True),
-        sa.Column("user_name", sa.String(), nullable=False),
+        sa.Column("user_id", sa.Integer, nullable=False),
+        sa.Column("date_time", sa.DateTime(), nullable=False),
         sa.Column("content", sa.String(), nullable=False),
     )
 
