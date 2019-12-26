@@ -26,4 +26,4 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_table("bug")
+    op.drop_table("message")
