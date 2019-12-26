@@ -6,8 +6,6 @@ services:
             dockerfile: Dockerfile
         depends_on:
             - db
-        ports:
-            - '8000:8000'
         networks:
             - my_network
 
@@ -22,6 +20,15 @@ services:
         networks:
             - my_network
 
+    chatbot:
+        build: 
+            context: ./chatbot
+            dockerfile: Dockerfile
+        depends_on:
+            - processor
+        networks:
+            - my_network
+                    
     db:
         build:
             context: ./db
