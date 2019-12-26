@@ -48,6 +48,15 @@ services:
             - db
         networks:
             - my_network
+    
+    shodan-bot:
+        build:
+            context: ./shodan-bot
+            dockerfile: Dockerfile
+        depends_on:
+            - processor
+        networks:
+            - my_network
             
 networks:
     my_network:
