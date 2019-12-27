@@ -1,7 +1,12 @@
+import boto3
+from botocore.exceptions import ClientError
 import requests
 from fastapi import FastAPI
 from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
+import imgkit
+import logging
+import urllib
 
 from entities.message import Message
 from entities.user import User, find_user_by_user_name, find_users, UserNotFoundError
@@ -21,13 +26,68 @@ app.add_middleware(
 
 class IncomingMessage(BaseModel):
     author: str
+    avatar_url: str
+    guild: str
     content: str
 
 
 @app.get("/message/")
 def process_message(message: IncomingMessage):
     _store_message(message)
-    return _shodan_message(message)
+    if "Image" in message.content:
+        file_name = _create_image(message)
+        _upload_image_to_s3(file_name=file_name, bucket="shodanbot")
+        return {"response_message": "Hey your image is made", "error": None}
+    else:
+        return {"response_message": "Text stored, thank you", "error": None}
+
+
+def _upload_image_to_s3(file_name, bucket, object_name=None):
+    """Upload a file to an S3 bucket
+
+    :param file_name: File to upload
+    :param bucket: Bucket to upload to
+    :param object_name: S3 object name. If not specified then file_name is used
+    :return: True if file was uploaded, else False
+    """
+
+    # If S3 object_name was not specified, use file_name
+    if object_name is None:
+        object_name = file_name
+
+    # Upload the file
+    s3_client = boto3.client("s3")
+    try:
+        s3_client.upload_file(
+            file_name, bucket, object_name, ExtraArgs={"ContentType": "image/jpeg"}
+        )
+    except ClientError as e:
+        logging.error(e)
+        return False
+    return True
+
+
+def _create_image(message: IncomingMessage):
+    options = {
+        "format": "jpg",
+        "crop-h": "338",
+        "crop-y": "12",
+        "crop-w": "326",
+        "crop-x": "12",
+        "disable-smart-width": "",
+        "width": 350,
+        "encoding": "UTF-8",
+    }
+    file_name = f"{message.author}_avatar.jpg"
+    safe_author = urllib.parse.quote(message.author, safe="")
+    safe_guild_name = urllib.parse.quote(message.guild, safe="")
+    imgkit.from_url(
+        f"http://avatar:5000/avatar/{safe_author}/{safe_guild_name}",
+        file_name,
+        options=options,
+    )
+
+    return file_name
 
 
 def _shodan_message(message: IncomingMessage):

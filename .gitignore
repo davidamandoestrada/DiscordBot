@@ -2,6 +2,7 @@
 env/
 .vscode/
 tmp/
+.aws/
 
 # Don't track .env file. It contains our bot's token.
 .env
