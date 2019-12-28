@@ -24,6 +24,18 @@ app.add_middleware(
 )
 
 
+class ImageCommand(BaseModel):
+    author: str
+    guild: str
+
+
+@app.get("/image/")
+def process_image_command(image_command: ImageCommand):
+    file_name = _create_image(image_command)
+    _upload_image_to_s3(file_name=file_name, bucket="shodanbot")
+    return {"response_message": None, "error": None}
+
+
 class IncomingMessage(BaseModel):
     author: str
     avatar_url: str
@@ -34,12 +46,7 @@ class IncomingMessage(BaseModel):
 @app.get("/message/")
 def process_message(message: IncomingMessage):
     _store_message(message)
-    if "Image" in message.content:
-        file_name = _create_image(message)
-        _upload_image_to_s3(file_name=file_name, bucket="shodanbot")
-        return {"response_message": "Hey your image is made", "error": None}
-    else:
-        return {"response_message": "Text stored, thank you", "error": None}
+    return {"response_message": "Text stored, thank you", "error": None}
 
 
 def _upload_image_to_s3(file_name, bucket, object_name=None):
