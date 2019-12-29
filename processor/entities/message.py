@@ -10,8 +10,8 @@ def find_messages_by_user(user):
 
 
 class Message:
-    def __init__(self, id, author_id, date_time, content: str):
-        self.id = id
+    def __init__(self, _id, author_id, date_time, content: str):
+        self._id = _id
         self.author_id = author_id
         self.date_time = date_time
         self.content = content

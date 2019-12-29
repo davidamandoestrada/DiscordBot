@@ -9,20 +9,40 @@ queries = pugsql.module("resources/sql/user")
 queries.connect("postgresql://postgres@db/discordbot")
 
 
+class InMemoryUserDataMapper:
+    users = {}
+    current_id = 1
+
+    def create(self, user_name: str, avatar_url: str):
+        if user_name not in self.users:
+            self.users[user_name] = User(
+                _id=self.current_id, user_name=user_name, avatar_url=avatar_url,
+            )
+
+    def find_users(self):
+        return [self.users[user_name] for user_name in self.useres]
+
+    def find_user_by_user_name(self, user_name: str):
+        try:
+            return self.users[user_name]
+        except KeyError:
+            raise UserNotFoundError
+
+
 class UserDataMapper:
     def create(self, user_name: str, avatar_url: str):
         queries.insert_user(user_name=user_name, avatar_url=avatar_url)
 
     def update(self, user):
         queries.update_user(
-            id=user.id, user_name=user.user_name, avatar_url=user.avatar_url
+            id=user._id, user_name=user.user_name, avatar_url=user.avatar_url
         )
 
     def find_users(self):
         results = queries.find_users()
         return [
             User(
-                id=result["id"],
+                _id=result["id"],
                 user_name=result["user_name"],
                 avatar_url=result["avatar_url"],
             )
@@ -33,7 +53,7 @@ class UserDataMapper:
         result = queries.find_user_by_user_name(user_name=user_name)
         if result:
             return User(
-                id=result["id"],
+                _id=result["id"],
                 user_name=result["user_name"],
                 avatar_url=result["avatar_url"],
             )

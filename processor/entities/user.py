@@ -16,8 +16,8 @@ def find_user_by_user_name(user_name: str):
 
 
 class User(BaseEntity):
-    def __init__(self, id, user_name: str, avatar_url: str):
-        self.id = id
+    def __init__(self, _id, user_name: str, avatar_url: str):
+        self._id = _id
         self.user_name = user_name
         self.avatar_url = avatar_url
 
