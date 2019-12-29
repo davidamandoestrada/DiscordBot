@@ -103,7 +103,7 @@ async def _handle_private_message(message):
     try:
         response = session.get(f"{chatbot}/message/", json=payload)
         function_to_use_to_respond = respond_to_private_message
-        await _handle_message_response(response, message, function_to_use_to_respond)
+        await _handle_message_response(response, function_to_use_to_respond)
     except Exception as exception:
         await message.author.create_dm()
         await message.author.dm_channel.send(f"ERROR: {exception}")
@@ -121,12 +121,12 @@ async def _handle_non_private_message(message):
     try:
         response = session.get(f"{processor}/message/", json=payload)
         function_to_use_to_respond = message.channel.send
-        await _handle_message_response(response, message, function_to_use_to_respond)
+        await _handle_message_response(response, function_to_use_to_respond)
     except Exception as exception:
         await message.channel.send(f"ERROR: {exception}")
 
 
-async def _handle_message_response(response, message, function_to_use_to_respond):
+async def _handle_message_response(response, function_to_use_to_respond):
     if response.status_code == 200:
         response_message = response.json()["response_message"]
         error = response.json()["error"]
