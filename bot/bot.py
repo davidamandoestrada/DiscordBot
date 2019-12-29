@@ -34,30 +34,54 @@ async def on_message(message):
         return
     if message.content.startswith(COMMAND_PREFIX):
         return
+    if message.channel.type == discord.ChannelType.private:
+        session = requests.Session()
+        payload = {
+            "content": message.content,
+        }
+        try:
+            response = session.get("http://chatbot:80/message/", json=payload)
+            if response.status_code == 200:
+                response_message = response.json()["response_message"]
+                error = response.json()["error"]
+                if error is None:
+                    if response_message:
+                        await message.author.create_dm()
+                        await message.author.dm_channel.send(response_message)
+                else:
+                    response_message = f"An error has occurred while processing this message. Error: {error}"
+                    await message.author.create_dm()
+                    await message.author.dm_channel.send(response_message)
+            else:
+                await message.author.create_dm()
+                await message.author.dm_channel.send(response)
+        except Exception as exception:
+            await message.author.create_dm()
+            await message.author.dm_channel.send(f"ERROR: {exception}")
+    else:
+        session = requests.Session()
+        payload = {
+            "author": str(message.author),
+            "avatar_url": str(message.author.avatar_url),
+            "guild": message.guild.name,
+            "content": message.content,
+        }
 
-    session = requests.Session()
-    payload = {
-        "author": str(message.author),
-        "avatar_url": str(message.author.avatar_url),
-        "guild": message.guild.name,
-        "content": message.content,
-    }
-
-    try:
-        response = session.get(f"{processor}/message/", json=payload)
-        if response.status_code == 200:
-            response_message = response.json()["response_message"]
-            error = response.json()["error"]
-            if error is None:
-                if response_message:
+        try:
+            response = session.get(f"{processor}/message/", json=payload)
+            if response.status_code == 200:
+                response_message = response.json()["response_message"]
+                error = response.json()["error"]
+                if error is None:
+                    if response_message:
+                        await message.channel.send(response_message)
+                else:
+                    response_message = f"An error has occurred while processing this message. Error: {error}"
                     await message.channel.send(response_message)
             else:
-                response_message = f"An error has occurred while processing this message. Error: {error}"
-                await message.channel.send(response_message)
-        else:
-            await message.channel.send(response)
-    except Exception as exception:
-        await message.channel.send(f"ERROR: {exception}")
+                await message.channel.send(response)
+        except Exception as exception:
+            await message.channel.send(f"ERROR: {exception}")
 
 
 @bot.command(name="Image")
@@ -74,6 +98,32 @@ async def on_image_command(ctx):
             error = response.json()["error"]
             if error is None:
                 await _send_avatar_image_to_discord(ctx)
+            else:
+                response_message = f"An error has occurred while processing this message. Error: {error}"
+                await ctx.send(response_message)
+        else:
+            await ctx.send(response)
+    except Exception as exception:
+        await ctx.send(f"ERROR: {exception}")
+
+
+@bot.command(name="Playback")
+async def on_playback_command(ctx):
+    session = requests.Session()
+    try:
+        response = session.get(f"{processor}/playback/")
+        if response.status_code == 200:
+            error = response.json()["error"]
+            if error is None:
+                response_message = response.json()["response_message"]
+                response_message_split_by_new_lines = response_message.split("\n")
+                n = 10
+                chunks = [
+                    response_message_split_by_new_lines[i : i + n]
+                    for i in range(0, len(response_message_split_by_new_lines), n)
+                ]
+                for chunk in chunks:
+                    await ctx.send("\n".join(chunk))
             else:
                 response_message = f"An error has occurred while processing this message. Error: {error}"
                 await ctx.send(response_message)
