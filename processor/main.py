@@ -32,14 +32,12 @@ class ImageCommand(BaseModel):
 
 @app.get("/playback/")
 def process_playback():
-    print("In process playback", flush=True)
     response = ["The following is a list of messages that have been recorded:"]
     users = find_users()
     for user in users:
         response.append(f"User {user.user_name} has said:")
         for message in user.messages:
             response.append(f"{message.date_time}: {message.content}")
-    print("About to return playback", flush=True)
     return {"response_message": "\n".join(response), "error": None}
 
 
