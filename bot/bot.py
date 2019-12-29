@@ -13,6 +13,8 @@ COMMAND_PREFIX = "!"
 load_dotenv()
 token = os.getenv("DISCORD_TOKEN")
 processor = f'http://{os.getenv("PROCESSOR_URL")}:80'
+chatbot = "http://chatbot:80"
+s3_url = "https://shodanbot.s3-us-west-1.amazonaws.com"
 
 bot = commands.Bot(command_prefix=COMMAND_PREFIX)
 
@@ -35,53 +37,9 @@ async def on_message(message):
     if message.content.startswith(COMMAND_PREFIX):
         return
     if message.channel.type == discord.ChannelType.private:
-        session = requests.Session()
-        payload = {
-            "content": message.content,
-        }
-        try:
-            response = session.get("http://chatbot:80/message/", json=payload)
-            if response.status_code == 200:
-                response_message = response.json()["response_message"]
-                error = response.json()["error"]
-                if error is None:
-                    if response_message:
-                        await message.author.create_dm()
-                        await message.author.dm_channel.send(response_message)
-                else:
-                    response_message = f"An error has occurred while processing this message. Error: {error}"
-                    await message.author.create_dm()
-                    await message.author.dm_channel.send(response_message)
-            else:
-                await message.author.create_dm()
-                await message.author.dm_channel.send(response)
-        except Exception as exception:
-            await message.author.create_dm()
-            await message.author.dm_channel.send(f"ERROR: {exception}")
+        await _handle_private_message(message)
     else:
-        session = requests.Session()
-        payload = {
-            "author": str(message.author),
-            "avatar_url": str(message.author.avatar_url),
-            "guild": message.guild.name,
-            "content": message.content,
-        }
-
-        try:
-            response = session.get(f"{processor}/message/", json=payload)
-            if response.status_code == 200:
-                response_message = response.json()["response_message"]
-                error = response.json()["error"]
-                if error is None:
-                    if response_message:
-                        await message.channel.send(response_message)
-                else:
-                    response_message = f"An error has occurred while processing this message. Error: {error}"
-                    await message.channel.send(response_message)
-            else:
-                await message.channel.send(response)
-        except Exception as exception:
-            await message.channel.send(f"ERROR: {exception}")
+        await _handle_non_private_message(message)
 
 
 @bot.command(name="Image")
@@ -133,14 +91,64 @@ async def on_playback_command(ctx):
         await ctx.send(f"ERROR: {exception}")
 
 
+async def _handle_private_message(message):
+    session = requests.Session()
+    payload = {
+        "content": message.content,
+    }
+    try:
+        response = session.get(f"{chatbot}/message/", json=payload)
+        if response.status_code == 200:
+            response_message = response.json()["response_message"]
+            error = response.json()["error"]
+            if error is None:
+                if response_message:
+                    await message.author.create_dm()
+                    await message.author.dm_channel.send(response_message)
+            else:
+                response_message = f"An error has occurred while processing this message. Error: {error}"
+                await message.author.create_dm()
+                await message.author.dm_channel.send(response_message)
+        else:
+            await message.author.create_dm()
+            await message.author.dm_channel.send(response)
+    except Exception as exception:
+        await message.author.create_dm()
+        await message.author.dm_channel.send(f"ERROR: {exception}")
+
+
+async def _handle_non_private_message(message):
+    session = requests.Session()
+    payload = {
+        "author": str(message.author),
+        "avatar_url": str(message.author.avatar_url),
+        "guild": message.guild.name,
+        "content": message.content,
+    }
+
+    try:
+        response = session.get(f"{processor}/message/", json=payload)
+        if response.status_code == 200:
+            response_message = response.json()["response_message"]
+            error = response.json()["error"]
+            if error is None:
+                if response_message:
+                    await message.channel.send(response_message)
+            else:
+                response_message = f"An error has occurred while processing this message. Error: {error}"
+                await message.channel.send(response_message)
+        else:
+            await message.channel.send(response)
+    except Exception as exception:
+        await message.channel.send(f"ERROR: {exception}")
+
+
 async def _send_avatar_image_to_discord(ctx):
     async with aiohttp.ClientSession() as session:
         avatar_file_name_url_safe = urllib.parse.quote(
             f"{ctx.author}_avatar.jpg", safe=""
         )
-        async with session.get(
-            f"https://shodanbot.s3-us-west-1.amazonaws.com/{avatar_file_name_url_safe}"
-        ) as resp:
+        async with session.get(f"{s3_url}/{avatar_file_name_url_safe}") as resp:
             if resp.status != 200:
                 return await ctx.send("Could not download file...")
             data = io.BytesIO(await resp.read())
