@@ -20,7 +20,7 @@ class InMemoryUserDataMapper:
             )
 
     def find_users(self):
-        return [self.users[user_name] for user_name in self.useres]
+        return [self.users[user_name] for user_name in self.users]
 
     def find_user_by_user_name(self, user_name: str):
         try:
