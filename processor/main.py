@@ -30,6 +30,19 @@ class ImageCommand(BaseModel):
     guild: str
 
 
+@app.get("/playback/")
+def process_playback():
+    print("In process playback", flush=True)
+    response = ["The following is a list of messages that have been recorded:"]
+    users = find_users()
+    for user in users:
+        response.append(f"User {user.user_name} has said:")
+        for message in user.messages:
+            response.append(f"{message.date_time}: {message.content}")
+    print("About to return playback", flush=True)
+    return {"response_message": "\n".join(response), "error": None}
+
+
 @app.get("/image/")
 def process_image_command(image_command: ImageCommand):
     try:
@@ -112,16 +125,6 @@ def _shodan_message(message: IncomingMessage):
     session = requests.Session()
     session.get(f"http://shodan-bot:8080/message/", json={})
     return {"response_message": None, "error": None}
-
-
-def _playback():
-    response = ["The following is a list of messages that have been recorded:"]
-    users = find_users()
-    for user in users:
-        response.append(f"User {user.user_name} has said:")
-        for message in user.messages:
-            response.append(f"{message.date_time}: {message.content}")
-    return {"response_message": "\n".join(response), "error": None}
 
 
 def _store_message(message: IncomingMessage):
