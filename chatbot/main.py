@@ -6,7 +6,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-origins = ["processor"]
+origins = ["bot"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -16,25 +16,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+chatbot = ChatBot("Shodan Bot")
+
+trained = False
+
 
 class IncomingMessage(BaseModel):
-    author: str
     content: str
 
 
 @app.get("/message/")
 def process_message(message: IncomingMessage):
-    try:
-        return {"response_message": "test", "error": None}
-        chatbot = ChatBot("Ron Obvious")
-
-        # Create a new trainer for the chatbot
+    global trained
+    if trained is False:
         trainer = ChatterBotCorpusTrainer(chatbot)
-
-        # Train the chatbot based on the english corpus
         trainer.train("chatterbot.corpus.english")
+        trainer.train("chatterbot.corpus.english.greetings")
+        trainer.train("chatterbot.corpus.english.conversations")
+        trained = True
 
-        # Get a response to an input statement
+    try:
         return {
             "response_message": str(chatbot.get_response(message.content)),
             "error": None,
