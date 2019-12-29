@@ -26,12 +26,19 @@ app.add_middleware(
 
 class ImageCommand(BaseModel):
     author: str
+    avatar_url: str
     guild: str
 
 
 @app.get("/image/")
 def process_image_command(image_command: ImageCommand):
-    file_name = _create_image(image_command)
+    try:
+        user = find_user_by_user_name(image_command.author)
+        user.avatar_url = image_command.avatar_url
+    except UserNotFoundError:
+        User.create_new(image_command.author)
+        user = find_user_by_user_name(image_command.author)
+    file_name = _create_image(image_command, user)
     _upload_image_to_s3(file_name=file_name, bucket="shodanbot")
     return {"response_message": None, "error": None}
 
@@ -74,7 +81,7 @@ def _upload_image_to_s3(file_name, bucket, object_name=None):
     return True
 
 
-def _create_image(message: IncomingMessage):
+def _create_image(message: IncomingMessage, user: User):
     options = {
         "format": "jpg",
         "crop-h": "338",
@@ -88,8 +95,12 @@ def _create_image(message: IncomingMessage):
     file_name = f"{message.author}_avatar.jpg"
     safe_author = urllib.parse.quote(message.author, safe="")
     safe_guild_name = urllib.parse.quote(message.guild, safe="")
+    level_url = urllib.parse.quote("https://i.redd.it/ct3wm41ws8021.jpg", safe="")
+    avatar_url = urllib.parse.quote(user.avatar_url, safe="")
+    exp = 5_000_000
+    level = 1_000_000
     imgkit.from_url(
-        f"http://avatar:5000/avatar/{safe_author}/{safe_guild_name}",
+        f"http://avatar:5000/avatar/{safe_author}/{safe_guild_name}/{avatar_url}/{level_url}/{exp}/{level}",
         file_name,
         options=options,
     )
