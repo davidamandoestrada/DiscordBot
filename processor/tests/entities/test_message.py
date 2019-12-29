@@ -10,7 +10,6 @@ class TestMessage:
         Message.create_new(author=user, content="test_content")
         messages = find_messages_by_user(user)
 
-        print(messages)
         assert len(messages) == 1
         assert messages[0].author_id == user._id
         assert messages[0].content == "test_content"
