@@ -13,8 +13,4 @@ class DataMapper(Singleton):
 
 class InMemoryDataMapper(DataMapper):
     def flush(self):
-        print("This is the current entities", flush=True)
-        print(self.entities, flush=True)
-        print("About to flush", flush=True)
         self.entities = {}
-        print(self.entities, flush=True)
