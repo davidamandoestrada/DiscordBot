@@ -1,5 +1,6 @@
 import pugsql
 
+from data_mappers.data_mapper import DataMapper, InMemoryDataMapper
 from entities.user import User, UserNotFoundError
 
 # Create a module of database functions from a set of sql files on disk.
@@ -9,27 +10,27 @@ queries = pugsql.module("resources/sql/user")
 queries.connect("postgresql://postgres@db/discordbot")
 
 
-class InMemoryUserDataMapper:
-    users = {}
+class InMemoryUserDataMapper(InMemoryDataMapper):
+    entities = {}
     current_id = 1
 
     def create(self, user_name: str, avatar_url: str):
-        if user_name not in self.users:
-            self.users[user_name] = User(
+        if user_name not in self.entities:
+            self.entities[user_name] = User(
                 _id=self.current_id, user_name=user_name, avatar_url=avatar_url,
             )
 
     def find_users(self):
-        return [self.users[user_name] for user_name in self.users]
+        return [self.entities[user_name] for user_name in self.entities]
 
     def find_user_by_user_name(self, user_name: str):
         try:
-            return self.users[user_name]
+            return self.entities[user_name]
         except KeyError:
             raise UserNotFoundError
 
 
-class UserDataMapper:
+class UserDataMapper(DataMapper):
     def create(self, user_name: str, avatar_url: str):
         queries.insert_user(user_name=user_name, avatar_url=avatar_url)
 
