@@ -1,11 +1,14 @@
 'use strict';
 
+const _ = require('lodash');
 const express = require('express');
 const fs = require('fs');
+const FuzzySet = require('fuzzyset.js')
 
 // Constants
 const PORT = 8080;
 const HOST = '0.0.0.0';
+const FUZZYMATCH_SCORE = 0.90
 
 // App
 const app = express();
@@ -26,25 +29,64 @@ app.get('/message', (req, res) => {
 
     res.setHeader('Content-Type', 'application/json');
     readJson('./resources/data.json', (err, data) => {
-        const lowerCaseMessageContent = content.toLocaleLowerCase();
-        const functionToCheckIfStringIsInIterable = (string) => { return (element) => element.toLocaleLowerCase() == string }
+        const fuzzyProfanityWords = FuzzySet(data.profanity);
+        const fuzzyPoliticalWords = FuzzySet(data.political)
+        const fuzzyEpicsWords = FuzzySet(data.epic)
 
-        const messageIsProfane = data.profanity.some(functionToCheckIfStringIsInIterable(lowerCaseMessageContent))
-        const messageIsPolitical = data.political.some(functionToCheckIfStringIsInIterable(lowerCaseMessageContent))
-        const messageIsEpic = data.epic.some(functionToCheckIfStringIsInIterable(lowerCaseMessageContent))
+        const fuzzyProfanityMatches = _.flatten(content.split(" ").map(wordInMessageContent => {
+            const fuzzyMatches = fuzzyProfanityWords.get(wordInMessageContent) || []
+            const highlyRatedFuzzyMatches = fuzzyMatches.filter(fuzzyMatch => fuzzyMatch[0] >= FUZZYMATCH_SCORE)
+            return highlyRatedFuzzyMatches.map(fuzzyMatch => {
+                return {
+                    "score": fuzzyMatch[0],
+                    "cutOffScore": FUZZYMATCH_SCORE,
+                    "wordMatched": fuzzyMatch[1],
+                    "wordFromMessage": wordInMessageContent
+                }
+            })
+        }))
+        const fuzzyPoliticalMatches = _.flatten(content.split(" ").map(wordInMessageContent => {
+            const fuzzyMatches = fuzzyPoliticalWords.get(wordInMessageContent) || []
+            const highlyRatedFuzzyMatches = fuzzyMatches.filter(fuzzyMatch => fuzzyMatch[0] >= FUZZYMATCH_SCORE)
+            return highlyRatedFuzzyMatches.map(fuzzyMatch => {
+                return {
+                    "score": fuzzyMatch[0],
+                    "cutOffScore": FUZZYMATCH_SCORE,
+                    "wordMatched": fuzzyMatch[1],
+                    "wordFromMessage": wordInMessageContent
+                }
+            })
+        }))
+        const fuzzyEpicMatches = _.flatten(content.split(" ").map(wordInMessageContent => {
+            const fuzzyMatches = fuzzyEpicsWords.get(wordInMessageContent) || []
+            const highlyRatedFuzzyMatches = fuzzyMatches.filter(fuzzyMatch => fuzzyMatch[0] >= FUZZYMATCH_SCORE)
+            return highlyRatedFuzzyMatches.map(fuzzyMatch => {
+                return {
+                    "score": fuzzyMatch[0],
+                    "cutOffScore": FUZZYMATCH_SCORE,
+                    "wordMatched": fuzzyMatch[1],
+                    "wordFromMessage": wordInMessageContent
+                }
+            })
+        }))
+        const responses = []
+        if (fuzzyProfanityMatches.length > 0) {
+            responses.push(`***${author}, Watch your mouth, insect.***`)
+            responses.push(fuzzyProfanityMatches.map(match => JSON.stringify(match)).toString())
+        }
+        if (fuzzyPoliticalMatches.length > 0) {
+            responses.push(`***${author}, No politics, insect!***`)
+            responses.push(fuzzyPoliticalMatches.map(match => JSON.stringify(match)).toString())
+        }
+        if (fuzzyEpicMatches.length > 0) {
+            responses.push(`***${author}, I tire of this topic, insect! Move along!***`)
+            responses.push(fuzzyEpicMatches.map(match => JSON.stringify(match)).toString())
+        }
 
-        if (messageIsProfane) {
-            res.send(JSON.stringify({ response_message: `***${author}, Watch your mouth, insect.***`, error: null }));
-        }
-        else if (messageIsPolitical) {
-            res.send(JSON.stringify({ response_message: `***${author}, No politics, insect!***`, error: null }));
-        }
-        else if (messageIsEpic) {
-            res.send(JSON.stringify({ response_message: `***${author}, I tire of this topic, insect! Move along!***`, error: null }));
-        }
-        else {
-            res.send(JSON.stringify({ response_message: "I am shodan", error: null }));
-        }
+        responses.push("Message received and processed")
+        res.send(JSON.stringify({ response_message: responses.join("\n"), error: null }));
+        res.end()
+
 
     })
 
