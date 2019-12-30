@@ -29,46 +29,29 @@ app.get('/message', (req, res) => {
 
     res.setHeader('Content-Type', 'application/json');
     readJson('./resources/data.json', (err, data) => {
+        const getFuzzyMatches = (typeOfMatch) => {
+            return _.flatten(content.split(" ").map(wordInMessageContent => {
+                const fuzzyMatches = typeOfMatch.get(wordInMessageContent) || []
+                const highScoringFuzzyMatches = fuzzyMatches.filter(fuzzyMatch => fuzzyMatch[0] >= FUZZYMATCH_SCORE)
+                return highScoringFuzzyMatches.map(fuzzyMatch => {
+                    return {
+                        "score": fuzzyMatch[0],
+                        "cutOffScore": FUZZYMATCH_SCORE,
+                        "wordMatched": fuzzyMatch[1],
+                        "wordFromMessage": wordInMessageContent
+                    }
+                })
+            }))
+        }
         const fuzzyProfanityWords = FuzzySet(data.profanity);
         const fuzzyPoliticalWords = FuzzySet(data.political)
         const fuzzyEpicsWords = FuzzySet(data.epic)
 
-        const fuzzyProfanityMatches = _.flatten(content.split(" ").map(wordInMessageContent => {
-            const fuzzyMatches = fuzzyProfanityWords.get(wordInMessageContent) || []
-            const highlyRatedFuzzyMatches = fuzzyMatches.filter(fuzzyMatch => fuzzyMatch[0] >= FUZZYMATCH_SCORE)
-            return highlyRatedFuzzyMatches.map(fuzzyMatch => {
-                return {
-                    "score": fuzzyMatch[0],
-                    "cutOffScore": FUZZYMATCH_SCORE,
-                    "wordMatched": fuzzyMatch[1],
-                    "wordFromMessage": wordInMessageContent
-                }
-            })
-        }))
-        const fuzzyPoliticalMatches = _.flatten(content.split(" ").map(wordInMessageContent => {
-            const fuzzyMatches = fuzzyPoliticalWords.get(wordInMessageContent) || []
-            const highlyRatedFuzzyMatches = fuzzyMatches.filter(fuzzyMatch => fuzzyMatch[0] >= FUZZYMATCH_SCORE)
-            return highlyRatedFuzzyMatches.map(fuzzyMatch => {
-                return {
-                    "score": fuzzyMatch[0],
-                    "cutOffScore": FUZZYMATCH_SCORE,
-                    "wordMatched": fuzzyMatch[1],
-                    "wordFromMessage": wordInMessageContent
-                }
-            })
-        }))
-        const fuzzyEpicMatches = _.flatten(content.split(" ").map(wordInMessageContent => {
-            const fuzzyMatches = fuzzyEpicsWords.get(wordInMessageContent) || []
-            const highlyRatedFuzzyMatches = fuzzyMatches.filter(fuzzyMatch => fuzzyMatch[0] >= FUZZYMATCH_SCORE)
-            return highlyRatedFuzzyMatches.map(fuzzyMatch => {
-                return {
-                    "score": fuzzyMatch[0],
-                    "cutOffScore": FUZZYMATCH_SCORE,
-                    "wordMatched": fuzzyMatch[1],
-                    "wordFromMessage": wordInMessageContent
-                }
-            })
-        }))
+
+        const fuzzyProfanityMatches = getFuzzyMatches(fuzzyProfanityWords)
+        const fuzzyPoliticalMatches = getFuzzyMatches(fuzzyPoliticalWords)
+        const fuzzyEpicMatches = getFuzzyMatches(fuzzyEpicsWords)
+
         const responses = []
         if (fuzzyProfanityMatches.length > 0) {
             responses.push(`***${author}, Watch your mouth, insect.***`)
@@ -85,7 +68,6 @@ app.get('/message', (req, res) => {
 
         responses.push("Message received and processed")
         res.send(JSON.stringify({ response_message: responses.join("\n"), error: null }));
-        res.end()
 
 
     })
