@@ -8,7 +8,7 @@ const FuzzySet = require('fuzzyset.js')
 // Constants
 const PORT = 8080;
 const HOST = '0.0.0.0';
-const FUZZYMATCH_SCORE = 0.90
+const FUZZYMATCH_SCORE = 0.80
 
 // App
 const app = express();
