@@ -64,7 +64,7 @@ class IncomingMessage(BaseModel):
 @app.get("/message/")
 def process_message(message: IncomingMessage):
     _store_message(message)
-    return {"response_message": "Text stored, thank you", "error": None}
+    return _shodan_message(message)
 
 
 def _upload_image_to_s3(file_name, bucket, object_name=None):
@@ -121,8 +121,10 @@ def _create_image(message: IncomingMessage, user: User):
 
 def _shodan_message(message: IncomingMessage):
     session = requests.Session()
-    session.get(f"http://shodan-bot:8080/message/", json={})
-    return {"response_message": None, "error": None}
+    headers = {"content-type": "application/json"}
+    return session.get(
+        f"http://shodan-bot:8080/message/", data=message.json(), headers=headers
+    ).json()
 
 
 def _store_message(message: IncomingMessage):

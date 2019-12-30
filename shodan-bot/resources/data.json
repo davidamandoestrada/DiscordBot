@@ -1,3 +1,4 @@
+// https://glench.github.io/fuzzyset.js/ could be useful
 {
     "profanity": [
         "fuck off",
@@ -72,7 +73,7 @@
         "Republican",
         "Democrat"
     ],
-    "politicalList": [
+    "political": [
         "Republican",
         "Democrat",
         "Republicans",
