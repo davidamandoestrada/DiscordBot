@@ -28,16 +28,16 @@ app.get('/message', (req, res) => {
     const content = req.body.content;
 
     readJson('./resources/data.json', (err, data) => {
-        const getFuzzyMatches = (typeOfMatch) => {
-            return _.flatten(content.split(" ").map(wordInMessageContent => {
-                const fuzzyMatches = typeOfMatch.get(wordInMessageContent) || []
+        const getFuzzyMatches = (typeOfMatch, stringToCheck) => {
+            return _.flatten(stringToCheck.split(" ").map(word => {
+                const fuzzyMatches = typeOfMatch.get(word) || []
                 const highScoringFuzzyMatches = fuzzyMatches.filter(fuzzyMatch => fuzzyMatch[0] >= FUZZYMATCH_SCORE)
                 return highScoringFuzzyMatches.map(fuzzyMatch => {
                     return {
                         "score": fuzzyMatch[0],
                         "cutOffScore": FUZZYMATCH_SCORE,
                         "wordMatched": fuzzyMatch[1],
-                        "wordFromMessage": wordInMessageContent
+                        "wordFromMessage": word
                     }
                 })
             }))
@@ -47,9 +47,9 @@ app.get('/message', (req, res) => {
         const fuzzyEpicsWords = FuzzySet(data.epic)
 
 
-        const fuzzyProfanityMatches = getFuzzyMatches(fuzzyProfanityWords)
-        const fuzzyPoliticalMatches = getFuzzyMatches(fuzzyPoliticalWords)
-        const fuzzyEpicMatches = getFuzzyMatches(fuzzyEpicsWords)
+        const fuzzyProfanityMatches = getFuzzyMatches(fuzzyProfanityWords, content)
+        const fuzzyPoliticalMatches = getFuzzyMatches(fuzzyPoliticalWords, content)
+        const fuzzyEpicMatches = getFuzzyMatches(fuzzyEpicsWords, content)
 
         const responses = []
         if (fuzzyProfanityMatches.length > 0) {
