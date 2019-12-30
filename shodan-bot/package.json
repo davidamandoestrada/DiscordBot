@@ -8,6 +8,8 @@
         "start": "node server.js"
     },
     "dependencies": {
-        "express": "^4.16.1"
+        "express": "^4.16.1",
+        "fuzzyset.js": "^0.0.8",
+        "lodash": "^4.17.15"
     }
 }
