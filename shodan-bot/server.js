@@ -27,7 +27,6 @@ app.get('/message', (req, res) => {
     const author = req.body.author;
     const content = req.body.content;
 
-    res.setHeader('Content-Type', 'application/json');
     readJson('./resources/data.json', (err, data) => {
         const getFuzzyMatches = (typeOfMatch) => {
             return _.flatten(content.split(" ").map(wordInMessageContent => {
@@ -67,6 +66,8 @@ app.get('/message', (req, res) => {
         }
 
         responses.push("Message received and processed")
+
+        res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify({ response_message: responses.join("\n"), error: null }));
 
 
