@@ -108,8 +108,8 @@ def _create_image(message: IncomingMessage, user: User):
     safe_guild_name = urllib.parse.quote(message.guild, safe="")
     level_url = urllib.parse.quote("https://i.redd.it/ct3wm41ws8021.jpg", safe="")
     avatar_url = urllib.parse.quote(user.avatar_url, safe="")
-    exp = 5_000_000
-    level = 1_000_000
+    exp = user.exp - user.exp_for_level(user.level)
+    level = user.level
     imgkit.from_url(
         f"http://avatar:5000/avatar/{safe_author}/{safe_guild_name}/{avatar_url}/{level_url}/{exp}/{level}",
         file_name,

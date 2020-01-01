@@ -1,3 +1,5 @@
+from math import log
+
 from data_mappers.registry import DataMapperRegistry
 from entities.base import BaseEntity
 from entities.message import find_messages_by_user
@@ -31,6 +33,17 @@ class User(BaseEntity):
     @property
     def messages(self):
         return find_messages_by_user(self)
+    
+    @property 
+    def exp(self):
+        return len(self.messages)
+    
+    @property
+    def level(self):
+        return log(self.exp)
+
+    def exp_for_level(self, level: int):
+        return exp(level)
 
 
 class UserNotFoundError(Exception):
