@@ -1,5 +1,6 @@
 import pugsql
 
+from data_mappers.data_mapper import DataMapper, InMemoryDataMapper
 from entities.message import Message
 
 
@@ -10,14 +11,14 @@ queries = pugsql.module("resources/sql/message")
 queries.connect("postgresql://postgres@db/discordbot")
 
 
-class InMemoryMessageDataMapper:
-    messages = {}
+class InMemoryMessageDataMapper(InMemoryDataMapper):
+    entities = {}
     current_id = 1
 
     def create(self, user, date_time, content: str):
-        if user.user_name not in self.messages:
-            self.messages[user.user_name] = []
-        self.messages[user.user_name].append(
+        if user.user_name not in self.entities:
+            self.entities[user.user_name] = []
+        self.entities[user.user_name].append(
             Message(
                 _id=self.current_id,
                 date_time=date_time,
@@ -27,10 +28,10 @@ class InMemoryMessageDataMapper:
         )
 
     def find_messages_by_user(self, user):
-        return self.messages.get(user.user_name, [])
+        return self.entities.get(user.user_name, [])
 
 
-class MessageDataMapper:
+class MessageDataMapper(DataMapper):
     def create(self, user, date_time, content: str):
         queries.insert_message(user_id=user._id, date_time=date_time, content=content)
 

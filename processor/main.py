@@ -11,6 +11,10 @@ import urllib
 from entities.message import Message
 from entities.user import User, find_user_by_user_name, find_users, UserNotFoundError
 
+# Constants
+AVATAR_CREATION_SERVICE_URL = "http://avatar:5000"
+SHODAN_BOT_URL = "http://shodan-bot:8080"
+
 app = FastAPI()
 
 origins = ["bot"]
@@ -111,7 +115,7 @@ def _create_image(message: IncomingMessage, user: User):
     exp = user.exp - user.exp_for_level(user.level)
     level = user.level
     imgkit.from_url(
-        f"http://avatar:5000/avatar/{safe_author}/{safe_guild_name}/{avatar_url}/{level_url}/{exp}/{level}",
+        f"{AVATAR_CREATION_SERVICE_URL}/avatar/{safe_author}/{safe_guild_name}/{avatar_url}/{level_url}/{exp}/{level}",
         file_name,
         options=options,
     )
@@ -123,7 +127,7 @@ def _shodan_message(message: IncomingMessage):
     session = requests.Session()
     headers = {"content-type": "application/json"}
     return session.get(
-        f"http://shodan-bot:8080/message/", data=message.json(), headers=headers
+        f"{SHODAN_BOT_URL}/message/", data=message.json(), headers=headers
     ).json()
 
 

@@ -74,12 +74,9 @@ async def on_playback_command(ctx):
             error = response.json()["error"]
             if error is None:
                 response_message = response.json()["response_message"]
-                response_message_split_by_new_lines = response_message.split("\n")
-                n = 10
-                chunks = [
-                    response_message_split_by_new_lines[i : i + n]
-                    for i in range(0, len(response_message_split_by_new_lines), n)
-                ]
+                chunks = _chunk_response_message_into_n_line_chunks(
+                    response_message, n=10
+                )
                 for chunk in chunks:
                     await ctx.send("\n".join(chunk))
             else:
@@ -89,6 +86,14 @@ async def on_playback_command(ctx):
             await ctx.send(response)
     except Exception as exception:
         await ctx.send(f"ERROR: {exception}")
+
+
+def _chunk_response_message_into_n_line_chunks(response_message, n):
+    response_message_split_by_new_lines = response_message.split("\n")
+    return [
+        response_message_split_by_new_lines[i : i + n]
+        for i in range(0, len(response_message_split_by_new_lines), n)
+    ]
 
 
 async def _handle_private_message(message):
