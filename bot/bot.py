@@ -50,24 +50,26 @@ async def on_image_command(ctx):
         "avatar_url": str(ctx.author.avatar_url),
         "guild": ctx.guild.name,
     }
+
     try:
         response = session.get(f"{processor}/image/", json=payload)
         if response.status_code == 200:
             error = response.json()["error"]
             if error is None:
                 await _send_avatar_image_to_discord(ctx)
-            else:
-                response_message = f"An error has occurred while processing this message. Error: {error}"
-                await ctx.send(response_message)
         else:
-            await ctx.send(response)
+            error = response
     except Exception as exception:
-        await ctx.send(f"ERROR: {exception}")
+        error = str(exception)
+
+    if error:
+        await ctx.send(error)
 
 
 @bot.command(name="Playback")
 async def on_playback_command(ctx):
     session = requests.Session()
+
     try:
         response = session.get(f"{processor}/playback/")
         if response.status_code == 200:
@@ -79,13 +81,13 @@ async def on_playback_command(ctx):
                 )
                 for chunk in chunks:
                     await ctx.send("\n".join(chunk))
-            else:
-                response_message = f"An error has occurred while processing this message. Error: {error}"
-                await ctx.send(response_message)
         else:
-            await ctx.send(response)
+            error = response
     except Exception as exception:
-        await ctx.send(f"ERROR: {exception}")
+        error = str(exception)
+
+    if error:
+        await ctx.send(error)
 
 
 def _chunk_response_message_into_n_line_chunks(response_message, n):
