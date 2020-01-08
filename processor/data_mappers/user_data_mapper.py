@@ -1,5 +1,4 @@
 import pugsql
-
 from data_mappers.data_mapper import DataMapper, InMemoryDataMapper
 from entities.user import User, UserNotFoundError
 

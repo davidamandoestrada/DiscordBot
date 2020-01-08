@@ -1,6 +1,6 @@
 from data_mappers.registry import DataMapperRegistry
 from entities.message import Message
-from entities.user import User, find_users, find_user_by_user_name
+from entities.user import User, find_user_by_user_name, find_users
 
 
 class TestUser:

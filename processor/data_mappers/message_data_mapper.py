@@ -1,8 +1,6 @@
 import pugsql
-
 from data_mappers.data_mapper import DataMapper, InMemoryDataMapper
 from entities.message import Message
-
 
 # Create a module of database functions from a set of sql files on disk.
 queries = pugsql.module("resources/sql/message")

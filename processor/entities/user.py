@@ -1,4 +1,4 @@
-from math import floor, log, exp, ceil
+from math import ceil, exp, floor, log
 
 from data_mappers.registry import DataMapperRegistry
 from entities.base import BaseEntity

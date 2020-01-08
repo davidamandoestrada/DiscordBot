@@ -1,16 +1,17 @@
-import boto3
-from botocore.exceptions import ClientError
-import requests
-from fastapi import FastAPI
-from pydantic import BaseModel
-from starlette.middleware.cors import CORSMiddleware
-import imgkit
 import logging
 import urllib
 
+import requests
+from botocore.exceptions import ClientError
+from pydantic import BaseModel
+
+import boto3
+import imgkit
 from entities.message import Message
-from entities.user import (User, find_user_by_user_name, find_users,
-                           UserNotFoundError)
+from entities.user import (User, UserNotFoundError, find_user_by_user_name,
+                           find_users)
+from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
 
 # Constants
 AVATAR_CREATION_SERVICE_URL = "http://avatar:5000"
