@@ -9,11 +9,23 @@ import logging
 import urllib
 
 from entities.message import Message
-from entities.user import User, find_user_by_user_name, find_users, UserNotFoundError
+from entities.user import (User, find_user_by_user_name, find_users,
+                           UserNotFoundError)
 
 # Constants
 AVATAR_CREATION_SERVICE_URL = "http://avatar:5000"
 SHODAN_BOT_URL = "http://shodan-bot:8080"
+IMAGE_OPTIONS = options = {
+        "format": "jpg",
+        "crop-h": "338",
+        "crop-y": "12",
+        "crop-w": "326",
+        "crop-x": "12",
+        "disable-smart-width": "",
+        "width": 350,
+        "encoding": "UTF-8",
+    }
+LEVEL_URL = "https://i.redd.it/ct3wm41ws8021.jpg"
 
 app = FastAPI()
 
@@ -53,9 +65,15 @@ def process_image_command(image_command: ImageCommand):
     except UserNotFoundError:
         User.create_new(image_command.author)
         user = find_user_by_user_name(image_command.author)
-    file_name = _create_image(image_command, user)
-    _upload_image_to_s3(file_name=file_name, bucket="shodanbot")
-    return {"response_message": None, "error": None}
+
+    file_name = f"{image_command.author}_avatar.jpg"
+    _create_image(message=image_command, user=user, file_name=file_name)
+
+    try:
+        _upload_image_to_s3(file_name=file_name, bucket="shodanbot")
+        return {"response_message": None, "error": None}
+    except Exception as error:
+        return {"response_message": error, "error": True}
 
 
 class IncomingMessage(BaseModel):
@@ -71,53 +89,35 @@ def process_message(message: IncomingMessage):
     return _shodan_message(message)
 
 
-def _upload_image_to_s3(file_name, bucket, object_name=None):
-    """Upload a file to an S3 bucket
-
-    :param file_name: File to upload
-    :param bucket: Bucket to upload to
-    :param object_name: S3 object name. If not specified then file_name is used
-    :return: True if file was uploaded, else False
-    """
-
-    # If S3 object_name was not specified, use file_name
-    if object_name is None:
-        object_name = file_name
-
-    # Upload the file
+def _upload_image_to_s3(file_name, bucket):
     s3_client = boto3.client("s3")
     try:
         s3_client.upload_file(
-            file_name, bucket, object_name, ExtraArgs={"ContentType": "image/jpeg"}
+            file_name, bucket, file_name, ExtraArgs={"ContentType":
+                                                     "image/jpeg"}
         )
-    except ClientError as e:
-        logging.error(e)
-        return False
-    return True
+    except ClientError as error:
+        logging.error(error)
+        raise error
 
 
-def _create_image(message: IncomingMessage, user: User):
-    options = {
-        "format": "jpg",
-        "crop-h": "338",
-        "crop-y": "12",
-        "crop-w": "326",
-        "crop-x": "12",
-        "disable-smart-width": "",
-        "width": 350,
-        "encoding": "UTF-8",
-    }
-    file_name = f"{message.author}_avatar.jpg"
+def _create_image(message: ImageCommand, user: User, file_name: str):
     safe_author = urllib.parse.quote(message.author, safe="")
     safe_guild_name = urllib.parse.quote(message.guild, safe="")
-    level_url = urllib.parse.quote("https://i.redd.it/ct3wm41ws8021.jpg", safe="")
-    avatar_url = urllib.parse.quote(user.avatar_url, safe="")
+    safe_avatar_url = urllib.parse.quote(user.avatar_url, safe="")
+    safe_level_url = urllib.parse.quote(LEVEL_URL,
+                                        safe="")
     exp = user.exp - user.exp_for_level(user.level)
     level = user.level
+
+    avatar_creation_service_url_parameters = [safe_author, safe_guild_name,
+                                              safe_avatar_url, safe_level_url,
+                                              str(exp), str(level)]
     imgkit.from_url(
-        f"{AVATAR_CREATION_SERVICE_URL}/avatar/{safe_author}/{safe_guild_name}/{avatar_url}/{level_url}/{exp}/{level}",
+        f"{AVATAR_CREATION_SERVICE_URL}/avatar/"
+        f"{'/'.join(avatar_creation_service_url_parameters)}",
         file_name,
-        options=options,
+        options=IMAGE_OPTIONS,
     )
 
     return file_name
