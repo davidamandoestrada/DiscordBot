@@ -1,13 +1,13 @@
-import requests
 import io
-import aiohttp
 import urllib
 
+import requests
+
+import aiohttp
 import discord
+from constants import COMMAND_PREFIX, PROCESSOR_URL, S3_URL, TOKEN
 from discord.ext import commands
 from dotenv import load_dotenv
-
-from constants import COMMAND_PREFIX, TOKEN, PROCESSOR_URL, S3_URL
 from message_handlers import handle_non_private_message, handle_private_message
 from utility import chunk_response_message_into_n_line_chunks
 
