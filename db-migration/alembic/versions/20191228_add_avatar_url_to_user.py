@@ -17,7 +17,8 @@ import sqlalchemy as sa
 
 
 def upgrade():
-    op.add_column("discord_user", sa.Column("avatar_url", sa.String(), nullable=True))
+    op.add_column("discord_user", sa.Column("avatar_url", sa.String(),
+                                            nullable=True))
 
 
 def downgrade():
