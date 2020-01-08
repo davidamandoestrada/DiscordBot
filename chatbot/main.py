@@ -42,4 +42,3 @@ def process_message(message: IncomingMessage):
         }
     except Exception as e:
         return {"response_message": str(e), "error": True}
-
