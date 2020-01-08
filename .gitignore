@@ -3,6 +3,7 @@ env/
 .vscode/
 tmp/
 .aws/
+.mypy_cache/
 
 # Don't track .env file. It contains our bot's token.
 .env
