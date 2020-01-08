@@ -1,7 +1,8 @@
+from pydantic import BaseModel
+
 from chatterbot import ChatBot
 from chatterbot.trainers import ChatterBotCorpusTrainer
 from fastapi import FastAPI
-from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()
