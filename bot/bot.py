@@ -23,14 +23,14 @@ async def on_ready():
 
 
 @bot.listen()
-async def on_member_join(member):
+async def on_member_join(member: discord.Member):
     await member.create_dm()
     await member.dm_channel.send(f"Hi {member.name},"
                                  " welcome to my Discord server!")
 
 
 @bot.listen()
-async def on_message(message):
+async def on_message(message: discord.Message):
     if message.author == bot.user:
         return
     if message.content.startswith(COMMAND_PREFIX):
@@ -42,7 +42,7 @@ async def on_message(message):
 
 
 @bot.command(name="Image")
-async def on_image_command(ctx):
+async def on_image_command(ctx: commands.context):
     session = requests.Session()
     payload = {
         "author": str(ctx.author),
@@ -66,7 +66,7 @@ async def on_image_command(ctx):
 
 
 @bot.command(name="Playback")
-async def on_playback_command(ctx):
+async def on_playback_command(ctx: commands.context):
     session = requests.Session()
 
     try:
@@ -89,7 +89,7 @@ async def on_playback_command(ctx):
         await ctx.send(error)
 
 
-async def _send_avatar_image_to_discord(ctx):
+async def _send_avatar_image_to_discord(ctx: commands.context):
     async with aiohttp.ClientSession() as session:
         avatar_file_name_url_safe = urllib.parse.quote(
             f"{ctx.author}_avatar.jpg", safe=""
