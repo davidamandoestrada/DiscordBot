@@ -73,7 +73,7 @@ def process_image_command(image_command: ImageCommand):
         _upload_image_to_s3(file_name=file_name, bucket="shodanbot")
         return {"response_message": None, "error": None}
     except Exception as error:
-        return {"response_message": error, "error": True}
+        return {"response_message": str(error), "error": True}
 
 
 class IncomingMessage(BaseModel):
