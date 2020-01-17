@@ -17,7 +17,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-chatbot = ChatBot("Shodan Bot")
+chatbot = ChatBot("Bot")
 
 trained = False
 
