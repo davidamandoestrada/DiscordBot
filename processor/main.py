@@ -15,6 +15,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 # Constants
 AVATAR_CREATION_SERVICE_URL = "http://avatar:5000"
+CHATBOT_URL = "http://chatbot:80"
 SHODAN_BOT_URL = "http://shodan-bot:8080"
 IMAGE_OPTIONS = options = {
         "format": "jpg",
@@ -64,7 +65,7 @@ def process_image_command(image_command: ImageCommand):
         user = find_user_by_user_name(image_command.author)
         user.avatar_url = image_command.avatar_url
     except UserNotFoundError:
-        User.create_new(image_command.author)
+        User.create_new(image_command.author, image_command.avatar_url)
         user = find_user_by_user_name(image_command.author)
 
     file_name = f"{image_command.author}_avatar.jpg"
@@ -82,12 +83,16 @@ class IncomingMessage(BaseModel):
     avatar_url: str
     guild: str
     content: str
+    type_of_message: str
 
 
 @app.get("/message/")
 def process_message(message: IncomingMessage):
     _store_message(message)
-    return _shodan_message(message)
+    if message.type_of_message == "non-private":
+        return _shodan_message(message)
+    elif message.type_of_message == "private":
+        return _chatbot_message(message)
 
 
 def _upload_image_to_s3(file_name, bucket):
@@ -129,6 +134,14 @@ def _shodan_message(message: IncomingMessage):
     headers = {"content-type": "application/json"}
     return session.get(
         f"{SHODAN_BOT_URL}/message/", data=message.json(), headers=headers
+    ).json()
+
+
+def _chatbot_message(message: IncomingMessage):
+    session = requests.Session()
+    headers = {"content-type": "application/json"}
+    return session.get(
+        f"{CHATBOT_URL}/message/", data=message.json(), headers=headers
     ).json()
 
 
