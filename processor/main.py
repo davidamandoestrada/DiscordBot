@@ -16,7 +16,7 @@ from starlette.middleware.cors import CORSMiddleware
 # Constants
 AVATAR_CREATION_SERVICE_URL = "http://avatar:5000"
 CHATBOT_URL = "http://chatbot:80"
-SHODAN_BOT_URL = "http://shodan-bot:8080"
+PROFANITY_POLITICS_FILTER_URL = "http://profanity-poltics-filter:8080"
 IMAGE_OPTIONS = options = {
         "format": "jpg",
         "crop-h": "338",
@@ -90,7 +90,7 @@ class IncomingMessage(BaseModel):
 def process_message(message: IncomingMessage):
     _store_message(message)
     if message.type_of_message == "non-private":
-        return _shodan_message(message)
+        return _profanity_and_politics_filter_message(message)
     elif message.type_of_message == "private":
         return _chatbot_message(message)
 
@@ -129,11 +129,11 @@ def _create_image(message: ImageCommand, user: User, file_name: str):
     return file_name
 
 
-def _shodan_message(message: IncomingMessage):
+def _profanity_and_politics_filter_message(message: IncomingMessage):
     session = requests.Session()
     headers = {"content-type": "application/json"}
     return session.get(
-        f"{SHODAN_BOT_URL}/message/", data=message.json(), headers=headers
+        f"{PROFANITY_POLITICS_FILTER_URL}/message/", data=message.json(), headers=headers
     ).json()
 
 

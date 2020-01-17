@@ -59,9 +59,9 @@ services:
         networks:
             - my_network
     
-    shodan-bot:
+    profanity-poltics-filter:
         build:
-            context: ./shodan-bot
+            context: ./profanity-politics-filter
             dockerfile: Dockerfile
         depends_on:
             - processor
