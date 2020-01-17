@@ -15,6 +15,10 @@ Make avatar image look better.
 + !Image: Will generate an avatar for the user who makes the command.
 ![](https://i.imgur.com/erXaZGQ.png "Image example")
 
+## --- Features ---
++ Profanity and politics filter, will monitor a channel for profanity or politics.
+![](https://i.imgur.com/CSJ2FEh.png "Making sure no one is profane!")
+
 ### --- How to Host Locally ---
 1. Make sure you have Docker (https://www.docker.com/products/docker-desktop) installed locally. If you don't have it installed, install it.
 2. Navigate to the directory to which you have cloned this repo.
