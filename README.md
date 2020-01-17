@@ -3,7 +3,7 @@
 ### --- WIP ---
 Make avatar image look better.
 
-![](https://i.imgur.com/0bjfmji.png "High-level Architecture")
+![](https://i.imgur.com/Bt17MKe.png "High-level Architecture")
 ### --- Maintainers --
 - *Raul Lanuza*
 - *David Estrada*
