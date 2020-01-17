@@ -1,6 +1,6 @@
 import requests
 
-from constants import CHATBOT_URL, PROCESSOR_URL
+from constants import PROCESSOR_URL
 
 
 async def handle_private_message(message):
@@ -10,10 +10,13 @@ async def handle_private_message(message):
 
     session = requests.Session()
     payload = {
+        "author": str(message.author),
+        "avatar_url": str(message.author.avatar_url),
         "content": message.content,
+        "type_of_message": "private"
     }
     try:
-        response = session.get(f"{CHATBOT_URL}/message/", json=payload)
+        response = session.get(f"{PROCESSOR_URL}/message/", json=payload)
         function_to_use_to_respond = respond_to_private_message
         await _handle_message_response(response, function_to_use_to_respond)
     except Exception as exception:
@@ -28,6 +31,7 @@ async def handle_non_private_message(message):
         "avatar_url": str(message.author.avatar_url),
         "guild": message.guild.name,
         "content": message.content,
+        "type_of_message": "non-private"
     }
 
     try:
