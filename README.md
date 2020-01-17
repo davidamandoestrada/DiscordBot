@@ -1,4 +1,6 @@
 ## Discord Bot
+
+![](https://i.imgur.com/Ia5Z2kc.png "High-level Architecture")
 ### --- Maintainers --
 - *Raul Lanuza*
 - *David Estrada*
