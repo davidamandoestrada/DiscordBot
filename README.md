@@ -1,6 +1,6 @@
 ## Discord Bot
 
-WIP:
+### --- WIP ---
 Processor will also handle private messages, not just non-private messages.
 Make avatar image look better.
 
@@ -8,8 +8,8 @@ Make avatar image look better.
 ### --- Maintainers --
 - *Raul Lanuza*
 - *David Estrada*
-- 
-### Commands
+
+### --- Commands ---
 + !Playback: Will playback all messages from all users who have spoken in a channel that the bot is in.
 ![](https://i.imgur.com/mszo2bl.png "Playback example")
 
