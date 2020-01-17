@@ -1,8 +1,8 @@
 {
-    "name": "shodan-bot",
+    "name": "profanity-poltiics-filter",
     "version": "1.0.0",
-    "description": "Shodan-bot, the one, the only",
-    "author": "Raul Lanuza",
+    "description": "A filter which will warn users to not speak profanely or about politics",
+    "author": "David Estrada, Raul Lanuza",
     "main": "server.js",
     "scripts": {
         "start": "node server.js"
