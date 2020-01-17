@@ -1,10 +1,9 @@
 ## Discord Bot
 
 ### --- WIP ---
-Processor will also handle private messages, not just non-private messages.
 Make avatar image look better.
 
-![](https://i.imgur.com/Ia5Z2kc.png "High-level Architecture")
+![](https://i.imgur.com/Bt17MKe.png "High-level Architecture")
 ### --- Maintainers --
 - *Raul Lanuza*
 - *David Estrada*
