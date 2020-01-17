@@ -30,25 +30,19 @@ app.get('/message', (req, res) => {
 
         const fuzzyProfanityWords = FuzzySet(data.profanity);
         const fuzzyPoliticalWords = FuzzySet(data.political)
-        const fuzzyEpicsWords = FuzzySet(data.epic)
 
 
         const fuzzyProfanityMatches = utility.getFuzzyMatches(fuzzyProfanityWords, content)
         const fuzzyPoliticalMatches = utility.getFuzzyMatches(fuzzyPoliticalWords, content)
-        const fuzzyEpicMatches = utility.getFuzzyMatches(fuzzyEpicsWords, content)
 
         const responses = []
         if (fuzzyProfanityMatches.length > 0) {
-            responses.push(`***${author}, Watch your mouth, insect.***`)
+            responses.push(`***${author}, No profanity!***`)
             responses.push(fuzzyProfanityMatches.map(match => JSON.stringify(match)).toString())
         }
         if (fuzzyPoliticalMatches.length > 0) {
-            responses.push(`***${author}, No politics, insect!***`)
+            responses.push(`***${author}, No politics!***`)
             responses.push(fuzzyPoliticalMatches.map(match => JSON.stringify(match)).toString())
-        }
-        if (fuzzyEpicMatches.length > 0) {
-            responses.push(`***${author}, I tire of this topic, insect! Move along!***`)
-            responses.push(fuzzyEpicMatches.map(match => JSON.stringify(match)).toString())
         }
 
         if (responses.length == 0) {
