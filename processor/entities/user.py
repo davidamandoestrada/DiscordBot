@@ -40,7 +40,10 @@ class User(BaseEntity):
 
     @property
     def level(self):
-        return floor(log(self.exp))
+        if self.exp > 0:
+            return floor(log(self.exp))
+        else:
+            return 0
 
     def exp_for_level(self, level: int):
         return ceil(exp(level))
