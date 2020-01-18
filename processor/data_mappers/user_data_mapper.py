@@ -1,3 +1,5 @@
+from typing import Dict, List
+
 import pugsql
 from data_mappers.data_mapper import DataMapper, InMemoryDataMapper
 from entities.user import User, UserNotFoundError
@@ -10,13 +12,15 @@ queries.connect("postgresql://postgres@db/discordbot")
 
 
 class InMemoryUserDataMapper(InMemoryDataMapper):
-    entities = {}
+    entities: Dict[str, List[User]] = {}
     current_id = 1
 
     def create(self, user_name: str, avatar_url: str):
         if user_name not in self.entities:
             self.entities[user_name] = User(
-                _id=self.current_id, user_name=user_name, avatar_url=avatar_url,
+                _id=self.current_id,
+                user_name=user_name,
+                avatar_url=avatar_url,
             )
 
     def find_users(self):
