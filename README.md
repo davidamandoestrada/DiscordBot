@@ -3,7 +3,7 @@
 ### --- WIP ---
 Make avatar image look better.
 
-![](https://i.imgur.com/Bt17MKe.png "High-level Architecture")
+![](https://i.imgur.com/M2BN5ua.png "High-level Architecture")
 ### --- Maintainers --
 - *Raul Lanuza*
 - *David Estrada*
@@ -14,6 +14,10 @@ Make avatar image look better.
 
 + !Image: Will generate an avatar for the user who makes the command.
 ![](https://i.imgur.com/erXaZGQ.png "Image example")
+
+## --- Features ---
++ Profanity and politics filter, will monitor a channel for profanity or politics.
+![](https://i.imgur.com/CSJ2FEh.png "Making sure no one is profane!")
 
 ### --- How to Host Locally ---
 1. Make sure you have Docker (https://www.docker.com/products/docker-desktop) installed locally. If you don't have it installed, install it.
