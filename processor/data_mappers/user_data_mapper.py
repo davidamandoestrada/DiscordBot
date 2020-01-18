@@ -37,7 +37,7 @@ class UserDataMapper(DataMapper):
     def create(self, user_name: str, avatar_url: str):
         queries.insert_user(user_name=user_name, avatar_url=avatar_url)
 
-    def update(self, user):
+    def update(self, user: User):
         queries.update_user(
             id=user._id, user_name=user.user_name, avatar_url=user.avatar_url
         )
