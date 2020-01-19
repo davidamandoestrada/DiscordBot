@@ -134,7 +134,9 @@ def _profanity_and_politics_filter_message(message: IncomingMessage):
     session = requests.Session()
     headers = {"content-type": "application/json"}
     return session.get(
-        f"{PROFANITY_POLITICS_FILTER_URL}/message/", data=message.json(), headers=headers
+        f"{PROFANITY_POLITICS_FILTER_URL}/message/",
+        data=message.json(),
+        headers=headers
     ).json()
 
 
