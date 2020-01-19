@@ -1,6 +1,6 @@
 import logging
-from typing import Optional
 import urllib
+from typing import Optional
 
 import requests
 from botocore.exceptions import ClientError
