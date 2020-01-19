@@ -18,19 +18,19 @@ bot = commands.Bot(command_prefix=COMMAND_PREFIX)
 
 
 @bot.listen()
-async def on_ready():
+async def on_ready() -> None:
     print(f"{bot.user.name} has connected to Discord!")
 
 
 @bot.listen()
-async def on_member_join(member: discord.Member):
+async def on_member_join(member: discord.Member) -> None:
     await member.create_dm()
     await member.dm_channel.send(f"Hi {member.name},"
                                  " welcome to my Discord server!")
 
 
 @bot.listen()
-async def on_message(message: discord.Message):
+async def on_message(message: discord.Message) -> None:
     if message.author == bot.user:
         return
     if message.content.startswith(COMMAND_PREFIX):
@@ -42,7 +42,7 @@ async def on_message(message: discord.Message):
 
 
 @bot.command(name="Image")
-async def on_image_command(ctx: commands.context):
+async def on_image_command(ctx: commands.context) -> None:
     session = requests.Session()
     payload = {
         "author": str(ctx.author),
@@ -66,7 +66,7 @@ async def on_image_command(ctx: commands.context):
 
 
 @bot.command(name="Playback")
-async def on_playback_command(ctx: commands.context):
+async def on_playback_command(ctx: commands.context) -> None:
     session = requests.Session()
 
     try:
@@ -89,7 +89,7 @@ async def on_playback_command(ctx: commands.context):
         await ctx.send(error)
 
 
-async def _send_avatar_image_to_discord(ctx: commands.context):
+async def _send_avatar_image_to_discord(ctx: commands.context) -> None:
     async with aiohttp.ClientSession() as session:
         avatar_file_name_url_safe = urllib.parse.quote(
             f"{ctx.author}_avatar.jpg", safe=""
