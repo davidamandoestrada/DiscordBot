@@ -1,24 +1,19 @@
+from dataclasses import dataclass
 from math import ceil, exp, floor, log
+from typing import List
 
 from data_mappers.registry import DataMapperRegistry
 from entities.base import BaseEntity
 from entities.message import find_messages_by_user
 
 
-def find_users():
-    user_data_mapper = DataMapperRegistry().get(User)
-    users = user_data_mapper.find_users()
-    return users
-
-
-def find_user_by_user_name(user_name: str):
-    user_data_mapper = DataMapperRegistry().get(User)
-    user = user_data_mapper.find_user_by_user_name(user_name)
-    return user
-
-
+@dataclass(init=False)
 class User(BaseEntity):
-    def __init__(self, _id, user_name: str, avatar_url: str):
+    _id: int
+    user_name: str
+    avatar_url: str
+
+    def __init__(self, _id: int, user_name: str, avatar_url: str):
         self._id = _id
         self.user_name = user_name
         self.avatar_url = avatar_url
@@ -53,3 +48,15 @@ class UserNotFoundError(Exception):
     """Raised when the user does not exist"""
 
     pass
+
+
+def find_users() -> List[User]:
+    user_data_mapper = DataMapperRegistry().get(User)
+    users = user_data_mapper.find_users()
+    return users
+
+
+def find_user_by_user_name(user_name: str) -> User:
+    user_data_mapper = DataMapperRegistry().get(User)
+    user = user_data_mapper.find_user_by_user_name(user_name)
+    return user
