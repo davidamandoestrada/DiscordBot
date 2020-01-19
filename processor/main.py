@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 import urllib
 
 import requests
@@ -81,7 +82,7 @@ def process_image_command(image_command: ImageCommand):
 class IncomingMessage(BaseModel):
     author: str
     avatar_url: str
-    guild: str
+    guild: Optional[str] = None
     content: str
     type_of_message: str
 
