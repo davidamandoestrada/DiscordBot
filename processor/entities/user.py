@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from math import ceil, exp, floor, log
-from typing import List
+from typing import List, Optional
 
 from data_mappers.registry import DataMapperRegistry
 from entities.base import BaseEntity
@@ -21,7 +21,7 @@ class User(BaseEntity):
         super(User, self).__init__()
 
     @classmethod
-    def create_new(cls, user_name: str, avatar_url: str):
+    def create_new(cls, user_name: str, avatar_url: Optional[str] = None):
         user_data_mapper = DataMapperRegistry().get(cls)
         user_data_mapper.create(user_name, avatar_url)
 
