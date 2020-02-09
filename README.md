@@ -1,5 +1,5 @@
 ## Discord Bot
-![](https://i.imgur.com/LIHO8e6.png =500x500)
+<img src="https://i.imgur.com/0yUaAhD.png">
 
 ### --- Maintainers --
 - *Raul Lanuza*
