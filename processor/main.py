@@ -155,4 +155,3 @@ def _store_message(message: IncomingMessage):
         User.create_new(message.author)
         user = find_user_by_user_name(message.author)
     Message.create_new(user, message.content)
-    return {"response_message": None, "error": None}
